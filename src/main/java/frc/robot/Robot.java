@@ -1,28 +1,63 @@
 package frc.robot;
 
-import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.drive.DifferentialDrive;
-import edu.wpi.first.wpilibj.motorcontrol.PWMSparkMax;
+import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.CommandScheduler;
+
 
 public class Robot extends TimedRobot {
-  private final PWMSparkMax leftMotor = new PWMSparkMax(1);
-  private final PWMSparkMax leftMotor1 = new PWMSparkMax(2);
-  private final PWMSparkMax rightMotor = new PWMSparkMax(3);
-  private final PWMSparkMax rightMotor1 = new PWMSparkMax(4);
-
-  private final DifferentialDrive robotDrive = new DifferentialDrive(leftMotor::set, rightMotor::set);
-  private final Joystick stick = new Joystick(0);
+  private Command autonomousCommand;
+  private final RobotContainer robotContainer;
 
   public Robot() {
-    leftMotor.addFollower(leftMotor1);
-    rightMotor.addFollower(rightMotor1);
-
-    rightMotor.setInverted(true);
+    robotContainer = new RobotContainer();
   }
 
   @Override
-  public void teleopPeriodic() {
-    robotDrive.arcadeDrive(-stick.getY(), -stick.getX());
+  public void robotPeriodic() {
+    CommandScheduler.getInstance().run();
   }
+
+  @Override
+  public void disabledInit() {}
+
+  @Override
+  public void disabledPeriodic() {}
+
+  @Override
+  public void autonomousInit() {
+    autonomousCommand = robotContainer.getAutonomousCommand();
+
+    // schedule the autonomous command (example)
+    if (autonomousCommand != null) {
+      autonomousCommand.schedule();
+    }
+  }
+
+  @Override
+  public void autonomousPeriodic() {}
+
+  @Override
+  public void teleopInit() {
+    if (autonomousCommand != null) {
+      autonomousCommand.cancel();
+    }
+  }
+
+  @Override
+  public void teleopPeriodic() {}
+
+  @Override
+  public void testInit() {
+    CommandScheduler.getInstance().cancelAll();
+  }
+
+  @Override
+  public void testPeriodic() {}
+
+  @Override
+  public void simulationInit() {}
+
+  @Override
+  public void simulationPeriodic() {}
 }
