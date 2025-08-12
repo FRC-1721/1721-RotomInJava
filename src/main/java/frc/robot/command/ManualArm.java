@@ -41,7 +41,7 @@ public class ManualArm extends Command {
     if (Math.abs(input) > zone) {
       return input;
     } else {
-      return zone;
+      return 0;
     }
   }
 
