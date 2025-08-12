@@ -6,9 +6,12 @@ public final class Constants {
   }
 
   public static final class DriveConstants {
-    public static final double DampenGlobal = 1;
-    public static final double DampenRight  = .5 * DampenGlobal;
-    public static final double DampenLeft   = 1 * DampenGlobal;
+    public static final double DampenGlobal = .2;
+    public static final double DampenRight  = 1 * DampenGlobal;
+    public static final double DampenLeft   = .6 * DampenGlobal;
+
+    public static final double DampenElevator = .7;
+    public static final double DampenLadder = .5;
   }
 
   public static final class MotorConstants {
