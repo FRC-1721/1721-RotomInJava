@@ -16,7 +16,7 @@ public final class Constants {
     public static final int leftFollow  = 1;
     public static final int rightLead   = 3;
     public static final int rightFollow = 4;
-    public static final int elevator    = 5;
+    public static final int elevator    = 11;
     public static final int ladder      = 6;
     public static final int claw        = 7;
   }
