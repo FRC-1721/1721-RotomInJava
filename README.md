@@ -9,6 +9,7 @@ View the data with **AdvantageScope**, which is installed with WPILib 2026 (look
 
 **Live, on the robot:** connect to the robot's network, open AdvantageScope, then *File → Connect to Robot*.
 **Live, in simulation:** run `./gradlew simulateJava`, then *File → Connect to Simulator*.
+Each sim run also saves a log to the `logs/` folder in this project (ignored by git).
 **After a match:** plug a FAT32 USB stick into the roboRIO before enabling. Logs (`.wpilog`) are written there;
 open them in AdvantageScope with *File → Open Log(s)*.
 

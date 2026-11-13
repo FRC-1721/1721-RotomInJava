@@ -40,7 +40,8 @@ public class Robot extends LoggedRobot {
         break;
 
       case SIM:
-        // Send live data to AdvantageScope only
+        // Save logs to the "logs" folder in this project, and send live data to AdvantageScope
+        Logger.addDataReceiver(new WPILOGWriter("logs"));
         Logger.addDataReceiver(new NT4Publisher());
         break;
 
