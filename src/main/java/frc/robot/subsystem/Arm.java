@@ -11,9 +11,9 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase{
-  //private final SparkMax claw = new SparkMax(Constants.MotorConstants.claw, MotorType.kBrushless);
   private final SparkMax ladder = new SparkMax(Constants.MotorConstants.ladder, MotorType.kBrushless);
   private final SparkMax elevator = new SparkMax(Constants.MotorConstants.elevator, MotorType.kBrushless);
+  private final SparkMax claw = new SparkMax(Constants.MotorConstants.claw, MotorType.kBrushless);
 
   public Arm() {
     SparkMaxConfig ladderConfig = new SparkMaxConfig();
@@ -44,6 +44,6 @@ public class Arm extends SubsystemBase{
   }
 
   public void grab(double speed) {
-    //    claw.set(speed);
+    claw.set(speed);
   }
 }

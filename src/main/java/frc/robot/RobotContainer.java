@@ -2,6 +2,7 @@ package frc.robot;
 
 import frc.robot.command.ArcadeDrive;
 import frc.robot.command.ManualArm;
+import frc.robot.command.ManualGripper;
 import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.Arm;
 import edu.wpi.first.wpilibj2.command.Command;
@@ -27,6 +28,8 @@ public class RobotContainer {
 
   private void configureBindings() {
     //driverController.b().whileTrue(new Explode());
+    driverController.button(5).whileTrue(new ManualGripper(armSubsystem, 0.5));
+    driverController.button(6).whileTrue(new ManualGripper(armSubsystem, -0.5));
   }
 
   public Command getAutonomousCommand() {
