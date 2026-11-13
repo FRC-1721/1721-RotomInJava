@@ -5,6 +5,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.system.plant.LinearSystemId;
 import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 
+/** A pretend arm for the desktop simulator: three simulated motors. */
 public class ArmIOSim implements ArmIO {
   private final DCMotorSim ladderSim = makeSim(DCMotor.getNEO(1));
   private final DCMotorSim elevatorSim = makeSim(DCMotor.getNEO(1));

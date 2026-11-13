@@ -7,7 +7,14 @@ import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
 
+/**
+ * A pretend drivetrain for the desktop simulator, so we can test code without
+ * the robot. It uses WPILib's physics model of the standard kit-of-parts chassis,
+ * which is close enough to see whether driving works.
+ */
 public class DriveIOSim implements DriveIO {
+  // Used to convert the sim's wheel distance (meters) into motor rotations,
+  // the same units the real SPARK MAX encoders report
   private static final double Gearing = KitbotGearing.k10p71.value;
   private static final double WheelCircumferenceMeters = Math.PI * Units.inchesToMeters(6);
 
@@ -20,6 +27,7 @@ public class DriveIOSim implements DriveIO {
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
+    // Apply the voltages and step the physics forward one loop (20 ms)
     sim.setInputs(leftAppliedVolts, rightAppliedVolts);
     sim.update(0.02);
 
@@ -34,6 +42,7 @@ public class DriveIOSim implements DriveIO {
     inputs.rightCurrentAmps = new double[] {sim.getRightCurrentDrawAmps()};
   }
 
+  // Turn power (-1 to 1) into volts, assuming a 12 V battery
   @Override
   public void setLeft(double speed) {
     leftAppliedVolts = MathUtil.clamp(speed, -1.0, 1.0) * 12.0;

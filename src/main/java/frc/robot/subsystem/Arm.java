@@ -5,6 +5,13 @@ import org.littletonrobotics.junction.Logger;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
+/**
+ * The arm: a lead screw "ladder" that changes the lift angle, a rope spool
+ * "elevator" that extends it, and a claw that grabs game pieces.
+ *
+ * Like Drive, this class decides WHAT to do, and the ArmIO it's given (real
+ * or simulated) talks to the motors.
+ */
 public class Arm extends SubsystemBase{
   private final ArmIO io;
   private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
@@ -13,6 +20,7 @@ public class Arm extends SubsystemBase{
     this.io = io;
   }
 
+  /** Runs every 20 ms: read the motors' sensors and log them. */
   @Override
   public void periodic() {
     io.updateInputs(inputs);
@@ -42,6 +50,10 @@ public class Arm extends SubsystemBase{
     io.setLadder(output);
   }
 
+  /**
+   * Spins the claw motor.
+   * @param speed Motor speed, positive and negative grab and release
+   */
   public void grab(double speed) {
     Logger.recordOutput("Arm/ClawOutput", speed);
     io.setClaw(speed);

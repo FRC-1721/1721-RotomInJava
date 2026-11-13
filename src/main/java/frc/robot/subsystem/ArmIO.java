@@ -2,6 +2,11 @@ package frc.robot.subsystem;
 
 import org.littletonrobotics.junction.AutoLog;
 
+/**
+ * The hardware layer for the arm. Works the same way as DriveIO: ArmIOSparkMax
+ * is the real robot, ArmIOSim is the simulator, and ArmIOInputs is everything
+ * we read from the motors (logged every loop by AdvantageKit).
+ */
 public interface ArmIO {
   @AutoLog
   public static class ArmIOInputs {
@@ -24,7 +29,10 @@ public interface ArmIO {
     public double clawTempCelsius = 0.0;
   }
 
+  /** Fill in "inputs" with the latest sensor readings. */
   public default void updateInputs(ArmIOInputs inputs) {}
+
+  // Motor powers below are -1 (full reverse) to 1 (full forward)
 
   public default void setLadder(double speed) {}
 

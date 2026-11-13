@@ -9,6 +9,10 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants;
 
+/**
+ * The real drivetrain hardware: four NEO motors on SPARK MAX controllers.
+ * On each side the "lead" motor gets commands and the "follow" motor copies it.
+ */
 public class DriveIOSparkMax implements DriveIO {
   private final SparkMax leftLead = new SparkMax(Constants.MotorConstants.leftLead, MotorType.kBrushless);
   private final SparkMax leftFollow = new SparkMax(Constants.MotorConstants.leftFollow, MotorType.kBrushless);
@@ -19,6 +23,9 @@ public class DriveIOSparkMax implements DriveIO {
     // you can't use .addFollower() bc rev and you can't use
     // MotorControllerGroup bc deprecated and so you have to
     // make a config for each motor
+    // Settings for all four: limit current to 50 amps to protect the motors and
+    // breakers, and use brake mode so the robot stops instead of coasting.
+    // The right side is inverted because its motors face the opposite direction.
     SparkMaxConfig globalConfig = new SparkMaxConfig();
     SparkMaxConfig leftLeadConfig = new SparkMaxConfig();
     SparkMaxConfig rightLeadConfig = new SparkMaxConfig();
@@ -29,6 +36,7 @@ public class DriveIOSparkMax implements DriveIO {
     rightLeadConfig.apply(globalConfig).inverted(true);
     leftFollowConfig.apply(globalConfig).follow(leftLead);
     rightFollowConfig.apply(globalConfig).follow(rightLead);
+    // Send the settings to each controller and save them so they survive a power cycle
     leftLead.configure(leftLeadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     leftFollow.configure(leftFollowConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
     rightLead.configure(rightLeadConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
@@ -37,6 +45,7 @@ public class DriveIOSparkMax implements DriveIO {
 
   @Override
   public void updateInputs(DriveIOInputs inputs) {
+    // getAppliedOutput() is -1 to 1, so multiply by battery voltage to get volts
     inputs.leftPositionRotations = leftLead.getEncoder().getPosition();
     inputs.leftVelocityRPM = leftLead.getEncoder().getVelocity();
     inputs.leftAppliedVolts = leftLead.getAppliedOutput() * leftLead.getBusVoltage();
@@ -50,6 +59,7 @@ public class DriveIOSparkMax implements DriveIO {
     inputs.rightTempCelsius = new double[] {rightLead.getMotorTemperature(), rightFollow.getMotorTemperature()};
   }
 
+  // Only the lead motors are set; the followers copy them automatically
   @Override
   public void setLeft(double speed) {
     leftLead.set(speed);

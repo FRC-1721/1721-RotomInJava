@@ -9,12 +9,15 @@ import com.revrobotics.spark.config.SparkMaxConfig;
 
 import frc.robot.Constants;
 
+/** The real arm hardware: one SPARK MAX each for the ladder, elevator, and claw. */
 public class ArmIOSparkMax implements ArmIO {
   private final SparkMax ladder = new SparkMax(Constants.MotorConstants.ladder, MotorType.kBrushless);
   private final SparkMax elevator = new SparkMax(Constants.MotorConstants.elevator, MotorType.kBrushless);
   private final SparkMax claw = new SparkMax(Constants.MotorConstants.claw, MotorType.kBrushless);
 
   public ArmIOSparkMax() {
+    // Brake mode makes the ladder hold its position when the stick is let go.
+    // The elevator and claw keep whatever settings are saved on their controllers.
     SparkMaxConfig ladderConfig = new SparkMaxConfig();
     ladderConfig.idleMode(IdleMode.kBrake);
     ladder.configure(ladderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
