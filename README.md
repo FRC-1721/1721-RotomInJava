@@ -24,8 +24,11 @@ Useful fields: `Drive/*` and `Arm/*` (motor inputs read from hardware), `RealOut
 4. Drag `RealOutputs/Odometry/Robot` from the sidebar onto the **Poses** area, and choose a robot model (e.g. KitBot).
 5. Drive. A **2D Field** tab gives a top-down view the same way.
 
-The robot's position is worked out from the wheel encoders (no gyro yet), using the gear ratio, wheel size and
-track width in `Constants.DriveConstants`. These are kit-of-parts defaults, so measure Rotom and update them.
+The robot's position is worked out from the wheel encoders, using the gear ratio, wheel size and track width in
+`Constants.DriveConstants`. These are kit-of-parts defaults, so measure Rotom and update them. On the real robot
+the heading comes from the navX gyro (`Drive/Gyro/*` in AdvantageScope; `Connected` should be true). The simulator
+has no gyro, so there the heading comes from the wheels too. Set `NavXConnection` in Constants to match how the
+navX is plugged in (default: MXP port, SPI).
 In sim the robot curves right when driving "straight" because `DampenLeft` slows the left side to correct a
 drift on the real robot.
 

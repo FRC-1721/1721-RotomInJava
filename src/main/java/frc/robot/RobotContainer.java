@@ -7,6 +7,8 @@ import frc.robot.subsystem.Drive;
 import frc.robot.subsystem.DriveIO;
 import frc.robot.subsystem.DriveIOSim;
 import frc.robot.subsystem.DriveIOSparkMax;
+import frc.robot.subsystem.GyroIO;
+import frc.robot.subsystem.GyroIONavX;
 import frc.robot.subsystem.Arm;
 import frc.robot.subsystem.ArmIO;
 import frc.robot.subsystem.ArmIOSim;
@@ -29,20 +31,21 @@ public class RobotContainer {
     // Each subsystem gets an "IO" object that talks to motors. On the robot that's
     // real SPARK MAXes, in the simulator it's fake motors, and in replay it's nothing
     // (the data comes from the log). The subsystem code is the same in all three cases.
+    // The simulator has no gyro, so Drive works out its heading from the wheels.
     switch (Constants.currentMode) {
       case REAL:
-        driveSubsystem = new Drive(new DriveIOSparkMax());
+        driveSubsystem = new Drive(new DriveIOSparkMax(), new GyroIONavX());
         armSubsystem = new Arm(new ArmIOSparkMax());
         break;
 
       case SIM:
-        driveSubsystem = new Drive(new DriveIOSim());
+        driveSubsystem = new Drive(new DriveIOSim(), new GyroIO() {});
         armSubsystem = new Arm(new ArmIOSim());
         break;
 
       default:
         // Replay: no hardware, inputs come from the log file
-        driveSubsystem = new Drive(new DriveIO() {});
+        driveSubsystem = new Drive(new DriveIO() {}, new GyroIO() {});
         armSubsystem = new Arm(new ArmIO() {});
         break;
     }

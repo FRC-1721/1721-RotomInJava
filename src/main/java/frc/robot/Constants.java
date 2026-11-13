@@ -1,5 +1,7 @@
 package frc.robot;
 
+import com.studica.frc.AHRS;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.util.Units;
@@ -65,6 +67,12 @@ public final class Constants {
      * corner of the field, facing away from the blue wall.
      */
     public static final Pose2d StartingPose = new Pose2d(2.0, 4.0, Rotation2d.kZero);
+
+    /**
+     * How the navX gyro is plugged into the roboRIO. kMXP_SPI means it sits on the
+     * wide MXP expansion port. Other options: kUSB1, kUSB2, kMXP_UART, kI2C.
+     */
+    public static final AHRS.NavXComType NavXConnection = AHRS.NavXComType.kMXP_SPI;
   }
 
   /**
