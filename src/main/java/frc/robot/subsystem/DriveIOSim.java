@@ -1,25 +1,32 @@
 package frc.robot.subsystem;
 
 import edu.wpi.first.math.MathUtil;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotGearing;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotMotor;
-import edu.wpi.first.wpilibj.simulation.DifferentialDrivetrainSim.KitbotWheelSize;
+import frc.robot.Constants;
 
 /**
  * A pretend drivetrain for the desktop simulator, so we can test code without
- * the robot. It uses WPILib's physics model of the standard kit-of-parts chassis,
- * which is close enough to see whether driving works.
+ * the robot. It uses WPILib's physics model of a tank drive, set up with the
+ * measurements in Constants, which is close enough to see whether driving works.
  */
 public class DriveIOSim implements DriveIO {
-  // Used to convert the sim's wheel distance (meters) into motor rotations,
-  // the same units the real SPARK MAX encoders report
-  private static final double Gearing = KitbotGearing.k10p71.value;
-  private static final double WheelCircumferenceMeters = Math.PI * Units.inchesToMeters(6);
+  // How hard the robot is to spin, and its weight. Same estimates WPILib uses
+  // for the kit-of-parts chassis.
+  private static final double MomentOfInertia = 0.86;
+  private static final double MassKg = Units.lbsToKilograms(60);
 
-  private final DifferentialDrivetrainSim sim = DifferentialDrivetrainSim.createKitbotSim(
-    KitbotMotor.kDoubleNEOPerSide, KitbotGearing.k10p71, KitbotWheelSize.kSixInch, null
+  private static final double WheelCircumferenceMeters = Math.PI * Constants.DriveConstants.WheelDiameterMeters;
+
+  private final DifferentialDrivetrainSim sim = new DifferentialDrivetrainSim(
+    DCMotor.getNEO(2),
+    Constants.DriveConstants.GearRatio,
+    MomentOfInertia,
+    MassKg,
+    Constants.DriveConstants.WheelDiameterMeters / 2,
+    Constants.DriveConstants.TrackWidthMeters,
+    null
   );
 
   private double leftAppliedVolts = 0.0;
@@ -31,13 +38,16 @@ public class DriveIOSim implements DriveIO {
     sim.setInputs(leftAppliedVolts, rightAppliedVolts);
     sim.update(0.02);
 
-    inputs.leftPositionRotations = sim.getLeftPositionMeters() / WheelCircumferenceMeters * Gearing;
-    inputs.leftVelocityRPM = sim.getLeftVelocityMetersPerSecond() / WheelCircumferenceMeters * Gearing * 60;
+    // The sim reports wheel distance in meters; convert to motor rotations,
+    // the same units the real SPARK MAX encoders report
+    double gearRatio = Constants.DriveConstants.GearRatio;
+    inputs.leftPositionRotations = sim.getLeftPositionMeters() / WheelCircumferenceMeters * gearRatio;
+    inputs.leftVelocityRPM = sim.getLeftVelocityMetersPerSecond() / WheelCircumferenceMeters * gearRatio * 60;
     inputs.leftAppliedVolts = leftAppliedVolts;
     inputs.leftCurrentAmps = new double[] {sim.getLeftCurrentDrawAmps()};
 
-    inputs.rightPositionRotations = sim.getRightPositionMeters() / WheelCircumferenceMeters * Gearing;
-    inputs.rightVelocityRPM = sim.getRightVelocityMetersPerSecond() / WheelCircumferenceMeters * Gearing * 60;
+    inputs.rightPositionRotations = sim.getRightPositionMeters() / WheelCircumferenceMeters * gearRatio;
+    inputs.rightVelocityRPM = sim.getRightVelocityMetersPerSecond() / WheelCircumferenceMeters * gearRatio * 60;
     inputs.rightAppliedVolts = rightAppliedVolts;
     inputs.rightCurrentAmps = new double[] {sim.getRightCurrentDrawAmps()};
   }

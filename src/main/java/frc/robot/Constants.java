@@ -1,5 +1,8 @@
 package frc.robot;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 
 /**
@@ -47,6 +50,21 @@ public final class Constants {
     public static final double DampenElevator = .7;
     /** Ladder (lead screw) speed scale. */
     public static final double DampenLadder = .5;
+
+    // Drivetrain measurements, used to work out where the robot is on the field.
+    // These are the kit-of-parts chassis defaults; measure Rotom and update them.
+
+    /** How many times the motor turns for one turn of the wheel. */
+    public static final double GearRatio = 10.71;
+    public static final double WheelDiameterMeters = Units.inchesToMeters(6);
+    /** Distance between the left and right wheels. */
+    public static final double TrackWidthMeters = Units.inchesToMeters(26);
+
+    /**
+     * Where the robot is when the code starts, in meters from the blue alliance
+     * corner of the field, facing away from the blue wall.
+     */
+    public static final Pose2d StartingPose = new Pose2d(2.0, 4.0, Rotation2d.kZero);
   }
 
   /**

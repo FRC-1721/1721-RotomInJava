@@ -2,6 +2,9 @@ package frc.robot.subsystem;
 
 import org.littletonrobotics.junction.Logger;
 
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.kinematics.DifferentialDriveOdometry;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
@@ -22,6 +25,11 @@ public class Drive extends SubsystemBase {
   private final DriveIOInputsAutoLogged inputs = new DriveIOInputsAutoLogged();
 
   private final DifferentialDrive robotDrive;
+
+  // Odometry keeps track of where the robot is on the field by adding up how far
+  // each side's wheels have turned. It's created on the first periodic() so it
+  // starts from the encoders' first real readings.
+  private DifferentialDriveOdometry odometry = null;
 
   public Drive(DriveIO io) {
     this.io = io;
@@ -44,11 +52,58 @@ public class Drive extends SubsystemBase {
     );
   }
 
-  /** Runs every 20 ms: read the motors' sensors and log them. */
+  /** Runs every 20 ms: read the motors' sensors, update the robot's position, and log them. */
   @Override
   public void periodic() {
     io.updateInputs(inputs);
     Logger.processInputs("Drive", inputs);
+
+    if (odometry == null) {
+      odometry = new DifferentialDriveOdometry(
+        getHeading(), getLeftMeters(), getRightMeters(), Constants.DriveConstants.StartingPose
+      );
+    } else {
+      odometry.update(getHeading(), getLeftMeters(), getRightMeters());
+    }
+    // AdvantageScope draws the robot on the field at this position
+    Logger.recordOutput("Odometry/Robot", getPose());
+  }
+
+  /** Where the robot is on the field (meters and heading). */
+  public Pose2d getPose() {
+    if (odometry == null) {
+      return Constants.DriveConstants.StartingPose;
+    }
+    return odometry.getPoseMeters();
+  }
+
+  /** Tell odometry the robot is now at "pose", e.g. at the start of autonomous. */
+  public void resetPose(Pose2d pose) {
+    if (odometry != null) {
+      odometry.resetPosition(getHeading(), getLeftMeters(), getRightMeters(), pose);
+    }
+  }
+
+  /** How far the left wheels have rolled, in meters. */
+  private double getLeftMeters() {
+    return inputs.leftPositionRotations / Constants.DriveConstants.GearRatio
+        * Math.PI * Constants.DriveConstants.WheelDiameterMeters;
+  }
+
+  /** How far the right wheels have rolled, in meters. */
+  private double getRightMeters() {
+    return inputs.rightPositionRotations / Constants.DriveConstants.GearRatio
+        * Math.PI * Constants.DriveConstants.WheelDiameterMeters;
+  }
+
+  /**
+   * Which way the robot is facing. We don't have a gyro yet, so this is worked
+   * out from the wheels: if the right side has gone farther than the left, the
+   * robot has turned left. It drifts over time on a real robot because wheels slip.
+   * When a gyro is added, return its angle here instead.
+   */
+  private Rotation2d getHeading() {
+    return new Rotation2d((getRightMeters() - getLeftMeters()) / Constants.DriveConstants.TrackWidthMeters);
   }
 
   /** Set each side's power directly (-1 to 1). Note: skips the Dampen scaling. */
