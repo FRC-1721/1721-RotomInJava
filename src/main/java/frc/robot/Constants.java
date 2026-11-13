@@ -1,6 +1,17 @@
 package frc.robot;
 
+import edu.wpi.first.wpilibj.RobotBase;
+
 public final class Constants {
+  public static enum Mode {
+    REAL,
+    SIM,
+    REPLAY
+  }
+
+  public static final Mode SimMode = Mode.SIM;
+  public static final Mode currentMode = RobotBase.isReal() ? Mode.REAL : SimMode;
+
   public static final class OperatorConstants {
     public static final int DriverControllerPort = 0;
   }

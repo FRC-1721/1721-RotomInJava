@@ -1,28 +1,23 @@
 package frc.robot.subsystem;
 
-import com.revrobotics.PersistMode;
-import com.revrobotics.ResetMode;
-import com.revrobotics.spark.SparkLowLevel.MotorType;
-import com.revrobotics.spark.SparkMax;
-import com.revrobotics.spark.config.SparkBaseConfig.IdleMode;
-import com.revrobotics.spark.config.SparkMaxConfig;
+import org.littletonrobotics.junction.Logger;
 
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
 public class Arm extends SubsystemBase{
-  private final SparkMax ladder = new SparkMax(Constants.MotorConstants.ladder, MotorType.kBrushless);
-  private final SparkMax elevator = new SparkMax(Constants.MotorConstants.elevator, MotorType.kBrushless);
-  private final SparkMax claw = new SparkMax(Constants.MotorConstants.claw, MotorType.kBrushless);
+  private final ArmIO io;
+  private final ArmIOInputsAutoLogged inputs = new ArmIOInputsAutoLogged();
 
-  public Arm() {
-    SparkMaxConfig ladderConfig = new SparkMaxConfig();
-    ladderConfig.idleMode(IdleMode.kBrake);
-    ladder.configure(ladderConfig, ResetMode.kResetSafeParameters, PersistMode.kPersistParameters);
+  public Arm(ArmIO io) {
+    this.io = io;
   }
 
   @Override
-  public void periodic() {}
+  public void periodic() {
+    io.updateInputs(inputs);
+    Logger.processInputs("Arm", inputs);
+  }
 
   /**
    * This is the spool motor, it controls
@@ -30,7 +25,9 @@ public class Arm extends SubsystemBase{
    * @param speed Motor speed
    */
   public void extension(double speed) {
-    elevator.set(speed * Constants.DriveConstants.DampenElevator);
+    double output = speed * Constants.DriveConstants.DampenElevator;
+    Logger.recordOutput("Arm/ElevatorOutput", output);
+    io.setElevator(output);
   }
 
   /**
@@ -40,10 +37,13 @@ public class Arm extends SubsystemBase{
    * @param speed Motor speed
    */
   public void ascent(double speed) {
-    ladder.set(speed * Constants.DriveConstants.DampenLadder);
+    double output = speed * Constants.DriveConstants.DampenLadder;
+    Logger.recordOutput("Arm/LadderOutput", output);
+    io.setLadder(output);
   }
 
   public void grab(double speed) {
-    claw.set(speed);
+    Logger.recordOutput("Arm/ClawOutput", speed);
+    io.setClaw(speed);
   }
 }
