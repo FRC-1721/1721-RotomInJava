@@ -34,6 +34,7 @@ public class RobotContainer {
     // The simulator has no gyro, so Drive works out its heading from the wheels.
     switch (Constants.currentMode) {
       case REAL:
+        // No navX on the robot? Use "new GyroIO() {}" here instead (see README).
         driveSubsystem = new Drive(new DriveIOSparkMax(), new GyroIONavX());
         armSubsystem = new Arm(new ArmIOSparkMax());
         break;
